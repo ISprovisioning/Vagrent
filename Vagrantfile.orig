@@ -1,0 +1,28 @@
+# Defining a New VM named webserver and assign to a variable named web
+VAGRANTFILE_API_VERSION = '2'
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |web|
+   
+   # Set the hostname of the VM
+   web.vm.hostname = "Ansiblemaster" 
+
+   # Set the box (OS) for the Virtual machine, we use centos7
+   web.vm.box = "geerlingguy/centos7" 
+
+   # Define the network for your VM I chose private_network, you can use public_network as well.
+   web.vm.network :private_network, ip: "192.168.10.10" 
+
+   # Port forwarding configuration as per our requirement
+   web.vm.network "forwarded_port", guest: "80", host: "8080" 
+
+   # Creating a Shared Directory between host and guest VM
+   web.vm.synced_folder "/apps/shared", "/shared" 
+
+   # Provision the webserver with Ansible, Execute the playbook
+   web.vm.provision "ansible" do |ansible| 
+
+       # Mention the fully qualified path and name of playbook. If no path mentioned, vagrant will take the base directory where Vagrantfile resides
+       ansible.playbook="apache-playbook.yaml" 
+
+   end 
+end
